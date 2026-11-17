@@ -1,0 +1,32 @@
+# competition data (landmark files) and anything derived from it must never be committed
+# (root-anchored so the source package src/islr is NOT ignored)
+/data/
+/models/
+/mlruns/
+/reports/**/*.npy
+/reports/**/*.npz
+/reports/**/*.png
+/reports/*.csv
+/reports/*.zip
+/reports/*.log
+*.onnx
+*.pt
+*.pth
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# os / editors / secrets
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.env
+kaggle.json

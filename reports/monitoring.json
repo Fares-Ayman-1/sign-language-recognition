@@ -1,0 +1,44 @@
+{
+  "checks": [
+    {
+      "check": "length_psi",
+      "value": 0.2018,
+      "threshold": 0.2,
+      "passed": false,
+      "kind": "input"
+    },
+    {
+      "check": "missing_dominant_hand",
+      "value": 0.0668,
+      "threshold": 0.15,
+      "passed": true,
+      "kind": "input"
+    },
+    {
+      "check": "missing_lips",
+      "value": 0.0083,
+      "threshold": 0.15,
+      "passed": true,
+      "kind": "input"
+    },
+    {
+      "check": "missing_pose",
+      "value": 0.0,
+      "threshold": 0.15,
+      "passed": true,
+      "kind": "input"
+    },
+    {
+      "check": "confidence_drop",
+      "value": -0.0208,
+      "threshold": 0.1,
+      "passed": true,
+      "kind": "performance"
+    }
+  ],
+  "input_drift": true,
+  "retrain_recommended": false,
+  "length_psi_noise_floor": 0.0268,
+  "reference_sequences": 76455,
+  "current_sequences": 300
+}

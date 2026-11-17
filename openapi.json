@@ -1,0 +1,464 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sign Language Recognition API",
+    "description": "Recognises 250 isolated ASL signs from MediaPipe Holistic landmarks. Errors always use `{\"error\": {\"code\", \"message\", \"details\"}}`. A live webcam demo is at `/demo/`.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Liveness check",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/model": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Model details and validation scores",
+        "operationId": "model_info_v1_model_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/signs": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "The 250 signs the model knows",
+        "operationId": "signs_v1_signs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predictions": {
+      "post": {
+        "tags": [
+          "prediction"
+        ],
+        "summary": "Recognise one sign from its landmarks",
+        "operationId": "predict_v1_predictions_post",
+        "parameters": [
+          {
+            "name": "top_k",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "description": "How many signs to return",
+              "default": 5,
+              "title": "Top K"
+            },
+            "description": "How many signs to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "`payload_too_large`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "`unsupported_media_type`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`validation_error`, `invalid_landmarks`, `too_many_frames`, `no_landmarks`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$defs": {
+                  "Frame": {
+                    "description": "One video frame. A part that MediaPipe did not detect is null or omitted.",
+                    "properties": {
+                      "face": {
+                        "anyOf": [
+                          {
+                            "items": {
+                              "items": {
+                                "type": "number"
+                              },
+                              "maxItems": 3,
+                              "minItems": 2,
+                              "type": "array"
+                            },
+                            "type": "array"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "468 points",
+                        "title": "Face"
+                      },
+                      "left_hand": {
+                        "anyOf": [
+                          {
+                            "items": {
+                              "items": {
+                                "type": "number"
+                              },
+                              "maxItems": 3,
+                              "minItems": 2,
+                              "type": "array"
+                            },
+                            "type": "array"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "21 points",
+                        "title": "Left Hand"
+                      },
+                      "pose": {
+                        "anyOf": [
+                          {
+                            "items": {
+                              "items": {
+                                "type": "number"
+                              },
+                              "maxItems": 3,
+                              "minItems": 2,
+                              "type": "array"
+                            },
+                            "type": "array"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "33 points",
+                        "title": "Pose"
+                      },
+                      "right_hand": {
+                        "anyOf": [
+                          {
+                            "items": {
+                              "items": {
+                                "type": "number"
+                              },
+                              "maxItems": 3,
+                              "minItems": 2,
+                              "type": "array"
+                            },
+                            "type": "array"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "21 points",
+                        "title": "Right Hand"
+                      }
+                    },
+                    "title": "Frame",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "frames": {
+                    "items": {
+                      "$ref": "#/components/schemas/Frame"
+                    },
+                    "maxItems": 1000,
+                    "minItems": 1,
+                    "title": "Frames",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "frames"
+                ],
+                "title": "LandmarkRequest",
+                "type": "object"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "landmarks"
+                ],
+                "properties": {
+                  "landmarks": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Competition-format parquet: frame, type, landmark_index, x, y, z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "examples": [
+              "invalid_landmarks"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorBody"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "ModelInfo": {
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "title": "Api Version"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "signs": {
+            "type": "integer",
+            "title": "Signs"
+          },
+          "max_frames_used": {
+            "type": "integer",
+            "title": "Max Frames Used"
+          },
+          "size_mb": {
+            "type": "number",
+            "title": "Size Mb"
+          },
+          "parameters": {
+            "type": "integer",
+            "title": "Parameters"
+          },
+          "validation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Validation",
+            "description": "Accuracy on signers never seen in training"
+          },
+          "mlflow_run_ids": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Mlflow Run Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "api_version",
+          "model",
+          "signs",
+          "max_frames_used",
+          "size_mb",
+          "parameters",
+          "validation",
+          "mlflow_run_ids"
+        ],
+        "title": "ModelInfo"
+      },
+      "PredictionResponse": {
+        "properties": {
+          "predictions": {
+            "items": {
+              "$ref": "#/components/schemas/SignScore"
+            },
+            "type": "array",
+            "title": "Predictions"
+          },
+          "frames": {
+            "type": "integer",
+            "title": "Frames",
+            "description": "Frames received"
+          },
+          "frames_used": {
+            "type": "integer",
+            "title": "Frames Used",
+            "description": "Frames the model looked at (at most 64, evenly spaced)"
+          },
+          "dominant_hand": {
+            "type": "string",
+            "title": "Dominant Hand",
+            "description": "`right`, `left` or `none`: the hand seen in more frames"
+          },
+          "hands_detected_frames": {
+            "type": "integer",
+            "title": "Hands Detected Frames"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predictions",
+          "frames",
+          "frames_used",
+          "dominant_hand",
+          "hands_detected_frames",
+          "latency_ms"
+        ],
+        "title": "PredictionResponse"
+      },
+      "SignList": {
+        "properties": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "SignList"
+      },
+      "SignScore": {
+        "properties": {
+          "sign": {
+            "type": "string",
+            "title": "Sign",
+            "examples": [
+              "hello"
+            ]
+          },
+          "probability": {
+            "type": "number",
+            "title": "Probability"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sign",
+          "probability"
+        ],
+        "title": "SignScore"
+      }
+    }
+  }
+}

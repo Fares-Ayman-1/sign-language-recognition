@@ -1,0 +1,38 @@
+paths:
+  raw: data/raw                # train.csv, sign_to_prediction_index_map.json, train_landmark_files/
+  cache: data/cache            # points.npy (selected points, float16) + index.csv
+  models: models
+  reports: reports
+
+tracking_uri: ../mlflow.db
+artifact_root: ../mlruns
+experiment: sign-language-recognition
+
+# Signer-independent validation: these 4 of the 21 participants are never used for training
+# (18,022 sequences, 19%). Pinned so every run, here and on Kaggle, scores the same people.
+valid_participants: [4718, 26734, 37779, 61333]
+max_len: 64                    # longer sequences keep 64 evenly spaced frames (inside the model)
+
+model:
+  dim: 192
+  stages: 2
+  convs_per_stage: 3
+  kernel: 17
+  heads: 4
+  expand: 2
+  drop: 0.2
+  head_drop: 0.4
+train:
+  epochs: 60
+  batch_size: 64
+  lr: 0.001
+  weight_decay: 0.05
+  warmup_epochs: 3
+  label_smoothing: 0.2
+  num_workers: 0               # Windows, small paging file: keep loading in-process (error 1455)
+  amp: true
+  seed: 42
+baseline:
+  epochs: 40
+  hidden: 512
+  lr: 0.001

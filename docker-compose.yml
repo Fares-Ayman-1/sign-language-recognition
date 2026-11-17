@@ -1,0 +1,7 @@
+services:
+  api:
+    build: .
+    image: islr:latest
+    ports: ["8030:8030"]      # API docs at /docs, webcam demo at /demo/
+    volumes:
+      - ./models:/app/models:ro
