@@ -68,6 +68,19 @@ export type SkeletonProps = {
   dim?: number; // 0..1 dims everything
   id?: string;
   crop?: boolean;
+  /** Optional colours (light theme). Omitted = the original dark look, unchanged. */
+  palette?: SkeletonPalette;
+};
+
+/** With a palette, the dominant hand (clip.handedness) keeps `dominant` even when mirrored. */
+export type SkeletonPalette = {
+  dominant: string;
+  other: string;
+  arm: string;
+  face: string; // full face mesh dots
+  faceSel: string; // the kept nose + lip points when `selected` > 0
+  glow?: boolean; // default false with a palette
+  trail?: number; // fingertip trail opacity (dark default 0.35)
 };
 
 export const Skeleton: React.FC<SkeletonProps> = ({
@@ -86,6 +99,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   dim = 0,
   id = "sk",
   crop = true,
+  palette,
 }) => {
   const box = useMemo(() => bounds(clip), [clip]);
   const bw = box.x1 - box.x0;
@@ -112,8 +126,18 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
   const pts = frameAt(clip, t, loop).map(place);
   const swap = mirror > 0.5;
-  const leftColor = swap ? C.accent : C.warm;
-  const rightColor = swap ? C.warm : C.accent;
+  let leftColor = swap ? C.accent : C.warm;
+  let rightColor = swap ? C.warm : C.accent;
+  if (palette) {
+    const domLeft = clip.handedness === "left";
+    leftColor = domLeft ? palette.dominant : palette.other;
+    rightColor = domLeft ? palette.other : palette.dominant;
+  }
+  const armColor = palette ? palette.arm : C.arm;
+  const faceColor = palette ? palette.face : C.face;
+  const selColor = palette ? palette.faceSel : "#ffffff";
+  const glow = palette ? !!palette.glow : true;
+  const trailOpacity = palette?.trail ?? 0.35;
 
   const trailPaths: { d: string; color: string }[] = [];
   if (trails) {
@@ -147,7 +171,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         cx={p[0]}
         cy={p[1]}
         r={(isSel && selected > 0 ? 2.6 : 1.5) * u}
-        fill={isSel && selected > 0 ? "#ffffff" : C.face}
+        fill={isSel && selected > 0 ? selColor : faceColor}
         opacity={op}
       />,
     );
@@ -178,12 +202,12 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     const q = pts[OFF.pose + b];
     if (p && q && poseOk(a) && poseOk(b))
       pose.push(
-        <line key={`pe${k}`} x1={p[0]} y1={p[1]} x2={q[0]} y2={q[1]} stroke={C.arm} strokeWidth={3 * u} strokeOpacity={0.55} strokeLinecap="round" />,
+        <line key={`pe${k}`} x1={p[0]} y1={p[1]} x2={q[0]} y2={q[1]} stroke={armColor} strokeWidth={3 * u} strokeOpacity={0.55} strokeLinecap="round" />,
       );
   });
   for (const i of [11, 12, 13, 14, 15, 16]) {
     const p = pts[OFF.pose + i];
-    if (p && poseOk(i)) pose.push(<circle key={`pp${i}`} cx={p[0]} cy={p[1]} r={5 * u} fill={C.arm} />);
+    if (p && poseOk(i)) pose.push(<circle key={`pp${i}`} cx={p[0]} cy={p[1]} r={5 * u} fill={armColor} />);
   }
 
   return (
@@ -198,11 +222,11 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         </filter>
       </defs>
       {trailPaths.map((tp, i) => (
-        <path key={i} d={tp.d} fill="none" stroke={tp.color} strokeWidth={2 * u} strokeOpacity={0.35} strokeLinecap="round" strokeLinejoin="round" />
+        <path key={i} d={tp.d} fill="none" stroke={tp.color} strokeWidth={2 * u} strokeOpacity={trailOpacity} strokeLinecap="round" strokeLinejoin="round" />
       ))}
       <g>{faceDots}</g>
       <g>{pose}</g>
-      <g filter={`url(#${id}-glow)`}>
+      <g filter={glow ? `url(#${id}-glow)` : undefined}>
         {hand(OFF.left, leftColor)}
         {hand(OFF.right, rightColor)}
       </g>

@@ -1,0 +1,16 @@
+[
+  { "key": "title", "dur": 105, "energy": 0, "whoosh": false },
+  { "key": "hook", "dur": 165, "energy": 1, "ticks": [53] },
+  { "key": "question", "dur": 180, "energy": 1, "ticks": [80, 86, 92] },
+  { "key": "demo", "dur": 495, "energy": 2 },
+  { "key": "data", "dur": 160, "energy": 2, "ticks": [51, 55, 59, 106] },
+  { "key": "points", "dur": 155, "energy": 2, "ticks": [80] },
+  { "key": "mirror", "dur": 160, "energy": 2, "ticks": [100] },
+  { "key": "features", "dur": 140, "energy": 2, "ticks": [50] },
+  { "key": "model", "dur": 160, "energy": 3, "ticks": [56, 62, 68, 74] },
+  { "key": "onnx", "dur": 160, "energy": 3, "ticks": [56, 60, 64] },
+  { "key": "eval", "dur": 300, "energy": 2, "riser": true, "ticks": [74, 82, 90, 140] },
+  { "key": "failure", "dur": 285, "energy": 1, "ticks": [46, 54] },
+  { "key": "eng", "dur": 150, "energy": 2, "ticks": [18, 21, 24, 27, 30, 33] },
+  { "key": "outro", "dur": 210, "energy": 1, "boom": true }
+]

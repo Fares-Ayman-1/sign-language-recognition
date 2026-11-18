@@ -51,3 +51,37 @@ The video uses whichever of these files exist in `public/`.
 hook (543 points) · question · live demo · data and signer split · 543 → 89 points · mirroring
 left-handers · 398 × 64 features · Conv1D + Transformer · one ONNX file · held-out results · where it fails
 (awake ↔ wake) · engineering · outro. Durations are in `src/Main.tsx`.
+
+## Light version
+
+`WideLight` (1920 × 1080) and `SquareLight` (1080 × 1080) tell the same story in the series' light look
+(the shared kit from `_video-kit`, copied to `src/kit/`): cream ground, white cards, navy Sora headlines,
+gold only as fills (one highlighter word per headline), mono gold-hairline pills, brand easing, no logo.
+It opens with the series title (Week 1 of 4) and ends with the series outro (next week: GI Tract MRI
+Segmentation). The dark `Wide`, `Square` and `Vertical` compositions and their files are unchanged.
+
+| Output | Command |
+|---|---|
+| `out/asl-wide-light.mp4` | `npm run render:wide-light` |
+| `out/asl-square-light.mp4` | `npm run render:square-light` |
+
+- Code: `src/light/` (`Main.tsx`, `num.ts`, `parts.tsx`, `scenes/`), kit in `src/kit/`. Timing lives in
+  `scenes-light.json` (14 scenes, 2,695 frames, 89.8 s); the kit `Timeline` got optional `music`/`sfx` props.
+- Skeleton colours (`palette` prop on `Skeleton`, off by default): dominant hand navy, other hand gold, arms
+  electric blue, face mesh navy at 30%, no glow.
+- Every number is read in `src/light/num.ts` from `reports/metrics.json`, `models/run/baseline.json`,
+  `models/meta.json`, `public/clips.json` and the landmark layout in `src/data.ts`. Three come only from the
+  project README: 21 signers (line 5), about 3% left-hand dominant (line 97), 398 features per frame (line 101).
+- Demo, music and sound (API on :8030 for the demo):
+
+```bash
+node scripts/capture_demo_light.mjs     # real /demo/ page, prefers-color-scheme light -> capture/demo-light.webm
+ffmpeg -i capture/demo-light.webm -vf "fps=30,format=yuv420p" -c:v libx264 -crf 14 public/demo-light.mp4
+cd ..; uv run --no-sync python video/scripts/music_light.py --root A --mode minor --bpm 96; cd video
+node scripts/stills.mjs WideLight 225 670 2000   # review stills -> out/stills-light/
+```
+
+`public/demo-light.mp4` is the same three held-out signers and warm-up as the dark recording. The light
+script adds one invisible 1 px repaint before stopping, so the last result (radio) is kept; Puppeteer's
+recorder otherwise drops the final frame. `music-light.mp3` / `sfx-light.mp3` come from `scenes-light.json`
+(A minor, 96 BPM); if you change a duration there, re-run `music_light.py`.

@@ -8,7 +8,9 @@
     "still": "remotion still",
     "render:wide": "remotion render Wide out/asl-wide.mp4 --codec h264 --crf 16",
     "render:square": "remotion render Square out/asl-square.mp4 --codec h264 --crf 16",
-    "render:vertical": "remotion render Vertical out/asl-vertical.mp4 --codec h264 --crf 16"
+    "render:vertical": "remotion render Vertical out/asl-vertical.mp4 --codec h264 --crf 16",
+    "render:wide-light": "remotion render WideLight out/asl-wide-light.mp4 --codec h264 --crf 16",
+    "render:square-light": "remotion render SquareLight out/asl-square-light.mp4 --codec h264 --crf 16"
   },
   "dependencies": {
     "@remotion/cli": "4.0.545",
