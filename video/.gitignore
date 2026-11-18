@@ -1,0 +1,6 @@
+node_modules/
+out/
+# derived from the competition landmark files: never commit (see the project .gitignore)
+public/clips.json
+capture/
+public/demo.mp4

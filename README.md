@@ -67,6 +67,15 @@ a camera, sign at a normal pace with your face and hands in view, then lower you
 sign when the hands drop (or use "Record 2 seconds"). On a laptop, the model takes about 6 ms per sign in
 the browser once warm; MediaPipe itself is the slow part.
 
+## Video
+
+![The first seconds of the explainer video: a held-out signer's landmarks assemble and sign "water"](docs/images/video-preview.gif)
+
+A 92-second explainer (16:9 and 1:1) built with [Remotion](https://www.remotion.dev/) in [`video/`](video/README.md).
+Every skeleton in it is a held-out signer's real landmarks, every prediction is `model.onnx` run on that
+recording, the demo scene is the real `/demo/` page screen-recorded in headless Chrome, and every number is
+read from `reports/metrics.json`. The music and sound effects are synthesized by `video/scripts/music.py`.
+
 ## Architecture
 
 ```mermaid
